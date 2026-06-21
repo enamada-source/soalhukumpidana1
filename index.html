@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Belajar Seleksi Calon Hakim</title>
+    <style>
+        /* --- CSS VARIABLES & THEMES --- */
+        :root {
+            --primary-color: #1e3a8a; /* Biru Navy */
+            --secondary-color: #b45309; /* Emas / Amber */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --secondary-color: #f59e0b;
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --text-color: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+        }
+
+        /* --- GLOBAL STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT & SIDEBAR --- */
+        #sidebar {
+            width: 260px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 10px;
+            background: var(--primary-color);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid var(--secondary-color);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            padding: 10px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        #main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 24px;
+            min-width: 0; /* Cegah flex item overflow */
+        }
+
+        /* --- TOPBAR --- */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background-color: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+
+        /* --- CARDS & WIDGETS --- */
+        .grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .countdown-box {
+            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+            color: white;
+            text-align: center;
+        }
+
+        .countdown-time {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--secondary-color);
+            margin: 10px 0;
+        }
+
+        /* --- VIEW MANAGEMENT --- */
+        .app-view {
+            display: none;
+        }
+
+        .app-view.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- POMODORO & TOOLS --- */
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+
+        /* --- FLASHCARD --- */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 16px;
+            font-weight: 500;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .card-front { background-color: var(--primary-color); color: white; }
+        .card-back { background-color: var(--secondary-color); color: white; transform: rotateY(180deg); }
+
+        /* --- TRACKER GRID --- */
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .tracker-item {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- FORM STYLES --- */
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        /* --- RESPONSIVE HAMBURGER --- */
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* UTILITIES */
+        .mt-3 { margin-top: 1rem; }
+        .d-flex { display: flex; gap: 10px; }
+        .flex-wrap { flex-wrap: wrap; }
+        .progress-bar {
+            background: var(--border-color);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            background: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* OUTLINE VERTICAL STYLE */
+        .outline-vertical-box {
+            margin-top: 8px; 
+            line-height: 1.6;
+            white-space: pre-wrap;
+            padding-left: 10px;
+            border-left: 2px dashed var(--border-color);
+        }
+
+        /* IFRAME FOR EXTERNAL HTML TO */
+        .to-html-iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fff;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo" id="app-logo">⚖️</div>
+            <div class="sidebar-title" id="app-title-display">CAKIM CENTER</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active" onclick="switchView('dashboard')">📊 Dashboard</li>
+            <li class="sidebar-item" onclick="switchView('materi')">📚 Materi Belajar</li>
+            <li class="sidebar-item" onclick="switchView('soal')">📝 Bank Soal</li>
+            <li class="sidebar-item" onclick="switchView('tryout')">⏳ Try Out</li>
+            <li class="sidebar-item" onclick="switchView('flashcard')">🎴 Flashcard</li>
+            <li class="sidebar-item" onclick="switchView('catatan')">✍️ Catatan Pribadi</li>
+            <li class="sidebar-item" onclick="switchView('jadwal')">📅 Jadwal & Target</li>
+            <li class="sidebar-item" onclick="switchView('analisis')">📈 Analisis & Tracker</li>
+            <li class="sidebar-item" onclick="switchView('pengaturan')">⚙️ Pengaturan</li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <h2 id="view-title">Dashboard</h2>
+            <div class="topbar-right">
+                <button class="btn btn-secondary" onclick="toggleFocusMode()">🧘 Mode Fokus</button>
+                <button class="btn btn-primary" onclick="toggleTheme()">🌓 Dark/Light</button>
+            </div>
+        </header>
+
+        <section id="view-dashboard" class="app-view active">
+            <div class="grid-dashboard">
+                <div class="card countdown-box">
+                    <h3>Countdown Ujian Seleksi</h3>
+                    <div class="countdown-time" id="countdown-timer">00 Hari 00 Jam</div>
+                    <p>Persiapkan diri sebaik mungkin!</p>
+                </div>
+                <div class="card">
+                    <h3>Motivasi Hari Ini</h3>
+                    <p id="daily-quote" style="font-style: italic; margin-top: 10px; color: var(--text-muted);">
+                        "Keadilan tidak melangkah dengan tergesa-gesa, namun ia pasti akan sampai."
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>Progres Target Harian</h3>
+                    <div id="target-summary-text">0/0 Target Selesai</div>
+                    <div class="progress-bar"><div class="progress-fill" id="target-progress-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <h3>⏰ Pomodoro Timer (Fokus Belajar)</h3>
+                <div class="timer-display" id="pomodoro-display">25:00</div>
+                <div class="d-flex">
+                    <button class="btn btn-primary" onclick="startPomodoro()">Mulai</button>
+                    <button class="btn btn-secondary" onclick="pausePomodoro()">Jeda</button>
+                    <button class="btn btn-danger" onclick="resetPomodoro()">Reset</button>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <h3>💡 Rekomendasi Belajar Cerdas AI</h3>
+                <p style="margin-top: 5px;" id="ai-recommendation">Menganalisis performa Anda... Silakan kerjakan Try Out atau latihan soal terlebih dahulu agar sistem dapat memetakan materi terlemah Anda.</p>
+            </div>
+        </section>
+
+        <section id="view-materi" class="app-view">
+            <div class="card">
+                <h3>Daftar Materi Kuliah & Seleksi</h3>
+                <input type="text" id="search-materi" placeholder="🔍 Cari materi hukum..." onkeyup="filterMateri()">
+                
+                <div class="d-flex flex-wrap mt-3" style="align-items: center;">
+                    <select id="form-materi-kategori" style="width: 200px; margin-bottom: 16px;">
+                        </select>
+                    <button class="btn btn-secondary" onclick="addNewCategory()" style="margin-bottom: 16px; height: 42px;">➕ Kategori Baru</button>
+                    <button class="btn btn-danger" onclick="deleteCategory()" style="margin-bottom: 16px; height: 42px;">🗑️ Hapus Kategori</button>
+                    <input type="text" id="form-materi-judul" placeholder="Judul Materi" style="flex: 1; margin-bottom: 16px;">
+                </div>
+                <textarea id="form-materi-konten" placeholder="Tulis atau paste isi materi hukum di sini... Gunakan ENTER untuk membuat baris Outline Vertikal baru."></textarea>
+                <button class="btn btn-primary" onclick="addMateri()">Tambah Materi</button>
+                
+                <hr style="margin: 20px 0; border-color: var(--border-color);">
+                <div id="materi-list"></div>
+            </div>
+        </section>
+
+        <section id="view-soal" class="app-view">
+            <div class="card">
+                <h3>Tambah Soal Latihan</h3>
+                <label>Pertanyaan Soal:</label>
+                <input type="text" id="soal-tanya" placeholder="Contoh: Apa asas legalitas dalam Hukum Pidana?">
+                <div class="grid-dashboard" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="text" id="soal-a" placeholder="Pilihan A">
+                    <input type="text" id="soal-b" placeholder="Pilihan B">
+                    <input type="text" id="soal-c" placeholder="Pilihan C">
+                    <input type="text" id="soal-d" placeholder="Pilihan D">
+                </div>
+                <label>Jawaban Benar:</label>
+                <select id="soal-kunci">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+                <label>Pembahasan:</label>
+                <textarea id="soal-pembahasan" placeholder="Penjelasan pasal terkait jawaban yang benar..."></textarea>
+                <button class="btn btn-primary" onclick="addSoal()">Simpan ke Bank Soal</button>
+            </div>
+
+            <div class="card mt-3">
+                <h3>Mode Latihan Mandiri</h3>
+                <button class="btn btn-secondary" onclick="generateLatihan()">Acak & Tampilkan Soal Latihan</button>
+                <div id="latihan-container" class="mt-3"></div>
+            </div>
+        </section>
+
+        <section id="view-tryout" class="app-view">
+            <div class="card">
+                <h3>Simulasi Real-Time Try Out Calon Hakim</h3>
+                <p>Ujian simulasi komprehensif menggunakan bank soal yang tersedia. Waktu pengerjaan akan berjalan mundur.</p>
+                <div class="d-flex mt-3">
+                    <label style="align-self: center;">Atur Durasi Ujian (Menit):</label>
+                    <input type="number" id="to-duration" value="30" style="width: 80px; margin: 0;">
+                    <button class="btn btn-primary" onclick="startTryOut()">🚀 Mulai Try Out Internal</button>
+                </div>
+            </div>
+
+            <!-- PERUBAHAN 1: FITUR LINK / UPLOAD FILE HTML TRYOUT -->
+            <div class="card mt-3">
+                <h3>🔗 Tautan Link & Upload Berkas Try Out (Eksternal / Mandiri)</h3>
+                <p style="margin-bottom: 10px; color: var(--text-muted);">Lampirkan tautan luar (Google Form/CAT BKN) ATAU langsung unggah file modul Try Out berbasis HTML (.html) Anda secara mandiri di sini.</p>
+                
+                <div style="background: var(--bg-color); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed var(--border-color);">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">📁 Opsi A: Unggah File HTML Try Out</label>
+                    <input type="file" id="to-file-html" accept=".html" onchange="loadHtmlTryOut(event)" style="margin-bottom: 0;">
+                </div>
+
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">🔗 Opsi B: Tambah Link Tautan Web</label>
+                <div class="d-flex flex-wrap" style="gap: 10px;">
+                    <input type="text" id="to-external-label" placeholder="Nama Try Out (Contoh: Try Out Akbar)" style="margin: 0; flex: 1; min-width: 200px;">
+                    <input type="text" id="to-external-url" placeholder="https://forms.gle/atau-link-tryout-anda" style="margin: 0; flex: 2; min-width: 250px;">
+                    <button class="btn btn-primary" onclick="addExternalLink()">Tambah Tautan</button>
+                </div>
+                
+                <div id="to-links-list" class="mt-3" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+
+            <!-- AREA PENGASINGAN UNTUK MEMBUKA FILE HTML YANG DIUPLOAD -->
+            <div id="to-html-viewer-box" class="card mt-3" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 id="to-html-viewer-title">📄 Menampilkan File Try Out HTML</h4>
+                    <button class="btn btn-danger" style="padding: 4px 12px;" onclick="closeHtmlTryOut()">Tutup Try Out</button>
+                </div>
+                <iframe id="to-html-iframe" class="to-html-iframe"></iframe>
+            </div>
+
+            <div id="to-execution-box" class="card mt-3" style="display: none;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--danger-color);">
+                    <span>PROSES SIMULASI SELEKSI</span>
+                    <span id="to-timer-display">Sisa Waktu: 30:00</span>
+                </div>
+                <div id="to-questions-area" class="mt-3"></div>
+                <button class="btn btn-danger mt-3" onclick="submitTryOut(true)">Selesai & Kirim Jawaban</button>
+            </div>
+
+            <div id="to-result-box" class="card mt-3" style="display: none;">
+                <h3>📊 Hasil Skor Try Out Anda</h3>
+                <div id="to-result-stats" class="mt-3" style="font-size: 18px; line-height: 1.8;"></div>
+            </div>
+        </section>
+
+        <section id="view-flashcard" class="app-view">
+            <!-- PERUBAHAN 2: STRUKTUR INPUT DIPERLEBAR DENGAN TEXTAREA -->
+            <div class="card">
+                <h3>Sistem Hafalan Cepat (Flashcard)</h3>
+                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px;">
+                    <label style="font-weight: 600;">Sisi Depan Kartu (Pertanyaan / Istilah Hukum):</label>
+                    <textarea id="fc-front" style="height: 80px;" placeholder="Tuliskan kata kunci, asas, atau pertanyaan hukum di sini..."></textarea>
+                    
+                    <label style="font-weight: 600;">Sisi Belakang Kartu (Jawaban / Penjelasan Detail):</label>
+                    <textarea id="fc-back" style="height: 120px;" placeholder="Tuliskan pasal terkait, arti yurisprudensi, atau penjelasan detail kalimat di sini..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="addFlashcard()">Tambah Kartu Hafalan</button>
+            </div>
+
+            <div class="flashcard-container" onclick="flipCard()">
+                <div class="flashcard" id="main-flashcard">
+                    <div class="card-front" id="fc-display-front">Klik 'Acak Kartu' untuk memulai hafalan Anda.</div>
+                    <div class="card-back" id="fc-display-back">Penjelasan akan muncul di sini.</div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-secondary" onclick="drawFlashcard()">🎲 Acak Kartu Lain</button>
+            </div>
+        </section>
+
+        <section id="view-catatan" class="app-view">
+            <div class="card">
+                <h3>Catatan & Resume Mandiri</h3>
+                <input type="text" id="note-title" placeholder="Judul Catatan Penting">
+                <textarea id="note-content" style="height: 150px;" placeholder="Tulis ringkasan sidang, analisis yurisprudensi, atau hasil diskusi di sini..."></textarea>
+                <button class="btn btn-primary" onclick="saveNote()">Simpan Catatan</button>
+                <div id="notes-list" class="mt-3"></div>
+            </div>
+        </section>
+
+        <section id="view-jadwal" class="app-view">
+            <div class="card">
+                <h3>Rencana & Target Belajar</h3>
+                <input type="text" id="target-text" placeholder="Contoh: Hafal bab 1 KUHP Baru / Review 5 Soal">
+                <button class="btn btn-primary" onclick="addTarget()">Tambah Agenda Target</button>
+                <ul id="target-list" style="list-style: none; margin-top: 15px;"></ul>
+            </div>
+        </section>
+
+        <section id="view-analisis" class="app-view">
+            <div class="card">
+                <h3>⚖️ Tracker Progres Penguasaan Regulasi (Ujian Calon Hakim)</h3>
+                <p>Centang komponen regulasi atau hukum yang sudah selesai Anda baca dan kuasai sepenuhnya:</p>
+                
+                <div class="tracker-grid">
+                    <div class="tracker-item"><label><input type="checkbox" id="track-uud" onchange="saveTrackers()"> UUD 1945</label></div>
+                    <div class="tracker-item"><label><input type="checkbox" id="track-kuhp" onchange="saveTrackers()"> KUHP UU 1/2023</label></div>
+                    <div class="tracker-item"><label><input type="checkbox" id="track-kk" onchange="saveTrackers()"> UU Kehakiman</label></div>
+                    <div class="tracker-item"><label><input type="checkbox" id="track-yur" onchange="saveTrackers()"> Yurisprudensi</label></div>
+                    <div class="tracker-item"><label><input type="checkbox" id="track-kaidah" onchange="saveTrackers()"> Kaidah Hukum</label></div>
+                    <div class="tracker-item"><label><input type="checkbox" id="track-perdata" onchange="saveTrackers()"> Acara Perdata</label></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-pengaturan" class="app-view">
+            <div class="card">
+                <h3>Modifikasi Identitas Aplikasi</h3>
+                <label>Nama Platform Belajar Anda:</label>
+                <input type="text" id="cfg-app-title" value="CAKIM CENTER">
+                <button class="btn btn-primary" onclick="saveConfig()">Perbarui Nama</button>
+            </div>
+
+            <div class="card mt-3">
+                <h3>Integrasi & Pencadangan Data (Anti-Hilang)</h3>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Seluruh data disimpan otomatis di browser lokal Anda. Ekspor berkas untuk cadangan berkala atau migrasi perangkat.</p>
+                <div class="d-flex flex-wrap">
+                    <button class="btn btn-secondary" onclick="exportData()">💾 Ekspor Data Berkas JSON</button>
+                    <button class="btn btn-primary" onclick="triggerImport()">📂 Impor Data Berkas JSON</button>
+                    <input type="file" id="import-file-holder" style="display: none;" onchange="importData(event)">
+                    <button class="btn btn-danger" onclick="resetAllData()">⚠️ Reset Semua Data Sistem</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="position: fixed; bottom: 20px; right: 20px; padding: 10px; border-radius: 50%; background: var(--primary-color); color: white; border: none; cursor: pointer; z-index: 99;">⬆️</button>
+
+    <script>
+        // --- DATA STORE INITIALIZATION ---
+        let appData = {
+            kategoriMateri: [
+                'Hukum Perdata', 'Hukum Pidana', 'Hukum Acara Perdata', 
+                'Hukum Acara Pidana', 'Hukum Islam', 'KUHP Nasional UU 1/2023', 'Etika Hakim'
+            ],
+            materi: [
+                { id: 1, kategori: 'Hukum Pidana', judul: 'Asas Legalitas', konten: 'Tidak ada suatu perbuatan dapat dipidana kecuali atas kekuatan aturan pidana dalam perundang-undangan yang telah ada sebelum perbuatan dilakukan.' }
+            ],
+            soal: [
+                { id: 1, tanya: 'Siapakah yang memegang Kekuasaan Kehakiman tertinggi di Indonesia?', a: 'Presiden', b: 'Mahkamah Agung', c: 'DPR', d: 'Kementerian Hukum', kunci: 'B', pembahasan: 'Berdasarkan UUD 1945 Pasal 24, kekuasaan kehakiman dilakukan oleh sebuah Mahkamah Agung dan badan peradilan di bawahnya.' }
+            ],
+            tryoutLinks: [], 
+            flashcards: [],
+            notes: [],
+            targets: [],
+            trackers: {},
+            config: { title: "CAKIM CENTER", theme: "light" }
+        };
+
+        // --- CORE KERNEL APP ---
+        window.onload = function() {
+            if(localStorage.getItem('cakim_platform_data')) {
+                let localData = JSON.parse(localStorage.getItem('cakim_platform_data'));
+                if(!localData.kategoriMateri) {
+                    localData.kategoriMateri = [...appData.kategoriMateri];
+                }
+                if(!localData.tryoutLinks) {
+                    localData.tryoutLinks = [];
+                }
+                appData = localData;
+            }
+            applyConfig();
+            initDashboard();
+            renderKategoriOptions();
+            renderMateri();
+            renderNotes();
+            renderTargets();
+            loadTrackers();
+            renderExternalLinks();
+        };
+
+        function saveData() {
+            localStorage.setItem('cakim_platform_data', JSON.stringify(appData));
+        }
+
+        // --- NAVIGATION CONTROLLER ---
+        function switchView(viewId) {
+            document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById('view-' + viewId).classList.add('active');
+            document.getElementById('view-title').innerText = viewId.toUpperCase();
+            
+            if(window.innerWidth <= 768) toggleSidebar();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleTheme() {
+            let currentTheme = document.documentElement.getAttribute('data-theme');
+            let nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', nextTheme);
+            appData.config.theme = nextTheme;
+            saveData();
+        }
+
+        function toggleFocusMode() {
+            let sb = document.getElementById('sidebar');
+            if(sb.style.display === 'none') {
+                sb.style.display = 'flex';
+                document.getElementById('main-content').style.marginLeft = "260px";
+            } else {
+                sb.style.display = 'none';
+                document.getElementById('main-content').style.marginLeft = "0";
+            }
+        }
+
+        // --- CONFIGURATION MANAGEMENT ---
+        function saveConfig() {
+            appData.config.title = document.getElementById('cfg-app-title').value;
+            saveData();
+            applyConfig();
+            alert('Pengaturan nama sukses diperbarui!');
+        }
+
+        function applyConfig() {
+            document.getElementById('app-title-display').innerText = appData.config.title;
+            document.documentElement.setAttribute('data-theme', appData.config.theme || 'light');
+        }
+
+        // --- DASHBOARD SYSTEMS ---
+        function initDashboard() {
+            let targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 90); 
+            
+            function updateCountdown() {
+                let now = new Date().getTime();
+                let diff = targetDate - now;
+                let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('countdown-timer').innerText = days + " Hari Lagi";
+            }
+            setInterval(updateCountdown, 60000);
+            updateCountdown();
+        }
+
+        // --- POMODORO TIMER ---
+        let pomodoroInterval;
+        let pomodoroTime = 1500; 
+        function startPomodoro() {
+            clearInterval(pomodoroInterval);
+            pomodoroInterval = setInterval(() => {
+                if(pomodoroTime <= 0) {
+                    clearInterval(pomodoroInterval);
+                    alert("Waktu fokus habis! Istirahatlah sejenak.");
+                    resetPomodoro();
+                } else {
+                    pomodoroTime--;
+                    let min = Math.floor(pomodoroTime / 60);
+                    let sec = pomodoroTime % 60;
+                    document.getElementById('pomodoro-display').innerText = `${min}:${sec < 10 ? '0':''}${sec}`;
+                }
+            }, 1000);
+        }
+        function pausePomodoro() { clearInterval(pomodoroInterval); }
+        function resetPomodoro() { clearInterval(pomodoroInterval); pomodoroTime = 1500; document.getElementById('pomodoro-display').innerText = "25:00"; }
+
+        // --- DYNAMIC CATEGORY CONTROLLER ---
+        function renderKategoriOptions() {
+            let selectElement = document.getElementById('form-materi-kategori');
+            selectElement.innerHTML = '';
+            appData.kategoriMateri.forEach(kat => {
+                let option = document.createElement('option');
+                option.value = kat;
+                option.innerText = kat;
+                selectElement.appendChild(option);
+            });
+        }
+
+        function addNewCategory() {
+            let newKat = prompt("Masukkan nama kategori hukum baru:");
+            if (newKat) {
+                newKat = newKat.trim();
+                if (newKat === "") return;
+                if (appData.kategoriMateri.includes(newKat)) {
+                    alert("Kategori ini sudah ada!");
+                    return;
+                }
+                appData.kategoriMateri.push(newKat);
+                saveData();
+                renderKategoriOptions();
+                document.getElementById('form-materi-kategori').value = newKat;
+                alert("Kategori baru berhasil ditambahkan!");
+            }
+        }
+
+        function deleteCategory() {
+            let selectedKat = document.getElementById('form-materi-kategori').value;
+            if (!selectedKat) return alert("Pilih kategori yang ingin dihapus terlebih dahulu.");
+            
+            if (confirm(`Apakah Anda yakin ingin menghapus kategori "${selectedKat}"? Perubahan ini akan memengaruhi filter data.`)) {
+                appData.kategoriMateri = appData.kategoriMateri.filter(kat => kat !== selectedKat);
+                saveData();
+                renderKategoriOptions();
+                alert("Kategori berhasil dihapus.");
+            }
+        }
+
+        // --- MATERI BELAJAR CONTROLLER ---
+        function addMateri() {
+            let kat = document.getElementById('form-materi-kategori').value;
+            let jud = document.getElementById('form-materi-judul').value;
+            let kon = document.getElementById('form-materi-konten').value;
+            
+            if(!kat || !jud || !kon) return alert("Mohon lengkapi seluruh kolom materi.");
+            
+            appData.materi.push({ id: Date.now(), kategori: kat, judul: jud, konten: kon });
+            saveData();
+            renderMateri();
+            
+            document.getElementById('form-materi-judul').value = '';
+            document.getElementById('form-materi-konten').value = '';
+        }
+
+        function renderMateri() {
+            let container = document.getElementById('materi-list');
+            container.innerHTML = '';
+            appData.materi.forEach(item => {
+                container.innerHTML += `
+                    <div class="card mt-3" style="border-left: 5px solid var(--primary-color);">
+                        <span style="font-size:12px; color:var(--secondary-color); font-weight:bold;">[${item.kategori}]</span>
+                        <h4>${item.judul}</h4>
+                        <div class="outline-vertical-box">${item.konten}</div>
+                        <button class="btn btn-danger mt-3" style="padding:4px 8px; font-size:12px;" onclick="deleteMateri(${item.id})">Hapus</button>
+                    </div>
+                `;
+            });
+        }
+
+        function filterMateri() {
+            let keyword = document.getElementById('search-materi').value.toLowerCase();
+            let container = document.getElementById('materi-list');
+            container.innerHTML = '';
+            
+            appData.materi.forEach(item => {
+                if(item.judul.toLowerCase().includes(keyword) || item.konten.toLowerCase().includes(keyword) || item.kategori.toLowerCase().includes(keyword)) {
+                    container.innerHTML += `
+                        <div class="card mt-3" style="border-left: 5px solid var(--primary-color);">
+                            <span style="font-size:12px; color:var(--secondary-color); font-weight:bold;">[${item.kategori}]</span>
+                            <h4>${item.judul}</h4>
+                            <div class="outline-vertical-box">${item.konten}</div>
+                            <button class="btn btn-danger mt-3" style="padding:4px 8px; font-size:12px;" onclick="deleteMateri(${item.id})">Hapus</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function deleteMateri(id) {
+            appData.materi = appData.materi.filter(m => m.id !== id);
+            saveData();
+            renderMateri();
+        }
+
+        // --- BANK SOAL & EXERCISE CONTROLLER ---
+        function addSoal() {
+            let tanya = document.getElementById('soal-tanya').value;
+            let a = document.getElementById('soal-a').value;
+            let b = document.getElementById('soal-b').value;
+            let c = document.getElementById('soal-c').value;
+            let d = document.getElementById('soal-d').value;
+            let kunci = document.getElementById('soal-kunci').value;
+            let pembahasan = document.getElementById('soal-pembahasan').value;
+
+            if(!tanya || !a || !b || !c || !d) return alert("Mohon lengkapi data opsi pilihan soal.");
+
+            appData.soal.push({ id: Date.now(), tanya, a, b, c, d, kunci, pembahasan });
+            saveData();
+            alert("Soal baru berhasil disimpan ke Bank Data!");
+            
+            document.getElementById('soal-tanya').value = '';
+            document.getElementById('soal-a').value = '';
+            document.getElementById('soal-b').value = '';
+            document.getElementById('soal-c').value = '';
+            document.getElementById('soal-d').value = '';
+            document.getElementById('soal-pembahasan').value = '';
+        }
+
+        function generateLatihan() {
+            let container = document.getElementById('latihan-container');
+            if(appData.soal.length === 0) return container.innerHTML = "Belum ada soal dalam sistem database.";
+            
+            let randomSoal = appData.soal[Math.floor(Math.random() * appData.soal.length)];
+            container.innerHTML = `
+                <div class="card" style="background-color: var(--bg-color);">
+                    <h4>${randomSoal.tanya}</h4>
+                    <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn btn-secondary" style="text-align:left;" onclick="checkJawaban('A', '${randomSoal.kunci}', ${randomSoal.id})">A. ${randomSoal.a}</button>
+                        <button class="btn btn-secondary" style="text-align:left;" onclick="checkJawaban('B', '${randomSoal.kunci}', ${randomSoal.id})">B. ${randomSoal.b}</button>
+                        <button class="btn btn-secondary" style="text-align:left;" onclick="checkJawaban('C', '${randomSoal.kunci}', ${randomSoal.id})">C. ${randomSoal.c}</button>
+                        <button class="btn btn-secondary" style="text-align:left;" onclick="checkJawaban('D', '${randomSoal.kunci}', ${randomSoal.id})">D. ${randomSoal.d}</button>
+                    </div>
+                    <div id="pembahasan-box-${randomSoal.id}" style="display:none; margin-top:15px; padding:10px; border-top:1px solid #ccc; font-size:14px;">
+                        <strong>Kunci Jawaban: ${randomSoal.kunci}</strong><br>${randomSoal.pembahasan}
+                    </div>
+                </div>
+            `;
+        }
+
+        function checkJawaban(pilihan, kunci, id) {
+            let box = document.getElementById(`pembahasan-box-${id}`);
+            box.style.display = "block";
+            if(pilihan === kunci) {
+                alert("Benar! Tepat Sekali.");
+            } else {
+                alert("Kurang Tepat, Silakan pelajari pembahasannya.");
+            }
+        }
+
+        // --- TRY OUT RUNTIME & EXTERNAL LINK CONTROLLER ---
+        let toTimerInterval;
+        let runningToSoal = [];
+        
+        // SCRIPT TAMBAHAN: MEMBACA DAN MERENDER BERKAS LOCAL HTML KE IFRAME
+        function loadHtmlTryOut(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let iframe = document.getElementById('to-html-iframe');
+                let viewerBox = document.getElementById('to-html-viewer-box');
+                
+                // Set konten file html ke dalam iframe srcdoc
+                iframe.srcdoc = e.target.result;
+                
+                // Tampilkan container viewer
+                document.getElementById('to-html-viewer-title').innerText = "📄 Menampilkan: " + file.name;
+                viewerBox.style.display = "block";
+                
+                // Scroll halus ke view area HTML
+                viewerBox.scrollIntoView({ behavior: 'smooth' });
+            };
+            reader.readAsText(file);
+        }
+
+        function closeHtmlTryOut() {
+            let iframe = document.getElementById('to-html-iframe');
+            iframe.srcdoc = "";
+            document.getElementById('to-html-viewer-box').style.display = "none";
+            document.getElementById('to-file-html').value = ""; // reset input file
+        }
+
+        function addExternalLink() {
+            let label = document.getElementById('to-external-label').value.trim();
+            let url = document.getElementById('to-external-url').value.trim();
+            
+            if(!label || !url) return alert("Mohon lengkapi nama Try Out dan alamat URL tautan.");
+            
+            if(!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            appData.tryoutLinks.push({ id: Date.now(), label: label, url: url });
+            saveData();
+            renderExternalLinks();
+            
+            document.getElementById('to-external-label').value = '';
+            document.getElementById('to-external-url').value = '';
+        }
+
+        function renderExternalLinks() {
+            let container = document.getElementById('to-links-list');
+            container.innerHTML = '';
+            
+            if(!appData.tryoutLinks || appData.tryoutLinks.length === 0) {
+                container.innerHTML = '<p style="font-size: 13px; color: var(--text-muted); font-style: italic;">Belum ada link eksternal yang dilampirkan.</p>';
+                return;
+            }
+            
+            appData.tryoutLinks.forEach(link => {
+                container.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 10px; border-radius: 6px; border-left: 4px solid var(--secondary-color);">
+                        <a href="${link.url}" target="_blank" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">📝 ${link.label}</a>
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteExternalLink(${link.id})">Hapus</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteExternalLink(id) {
+            appData.tryoutLinks = appData.tryoutLinks.filter(l => l.id !== id);
+            saveData();
+            renderExternalLinks();
+        }
+
+        function startTryOut() {
+            if(appData.soal.length === 0) return alert("Bank soal kosong, tambahkan soal terlebih dahulu.");
+            
+            document.getElementById('to-execution-box').style.display = "block";
+            document.getElementById('to-result-box').style.display = "none";
+            
+            runningToSoal = [...appData.soal].sort(() => 0.5 - Math.random()).slice(0, 10); 
+            let qa = document.getElementById('to-questions-area');
+            qa.innerHTML = '';
+
+            runningToSoal.forEach((s, idx) => {
+                qa.innerHTML += `
+                    <div class="mt-3" style="padding-bottom:15px; border-bottom:1px solid var(--border-color);">
+                        <p><strong>${idx+1}. ${s.tanya}</strong></p>
+                        <select id="to-ans-${idx}" style="width:200px; margin-top:5px;">
+                            <option value="">-- Pilih Jawaban --</option>
+                            <option value="A">A. ${s.a}</option>
+                            <option value="B">B. ${s.b}</option>
+                            <option value="C">C. ${s.c}</option>
+                            <option value="D">D. ${s.d}</option>
+                        </select>
+                    </div>
+                `;
+            });
+
+            let duration = document.getElementById('to-duration').value * 60;
+            clearInterval(toTimerInterval);
+            toTimerInterval = setInterval(() => {
+                duration--;
+                let m = Math.floor(duration / 60);
+                let s = duration % 60;
+                document.getElementById('to-timer-display').innerText = `Sisa Waktu: ${m}:${s < 10 ? '0':''}${s}`;
+                if(duration <= 0) {
+                    clearInterval(toTimerInterval);
+                    submitTryOut(false);
+                }
+            }, 1000);
+        }
+
+        function submitTryOut(isManual) {
+            clearInterval(toTimerInterval);
+            if(isManual) alert("Jawaban berhasil dikirimkan!");
+
+            let benar = 0;
+            let salah = 0;
+
+            runningToSoal.forEach((s, idx) => {
+                let userAns = document.getElementById(`to-ans-${idx}`).value;
+                if(userAns === s.kunci) benar++; else salah++;
+            });
+
+            let total = runningToSoal.length;
+            let skor = (benar / total) * 100;
+
+            document.getElementById('to-execution-box').style.display = "none";
+            let rb = document.getElementById('to-result-box');
+            rb.style.display = "block";
+            
+            document.getElementById('to-result-stats').innerHTML = `
+                🏁 <strong>Hasil Skor Akhir: ${skor.toFixed(1)} / 100</strong><br>
+                ✅ Jumlah Benar: ${benar} Soal<br>
+                ❌ Jumlah Salah: ${salah} Soal<br>
+                👑 Nilai kelulusan Passing Grade Simulasi: <strong>${skor >= 70 ? 'LULUS PASSED' : 'TIDAK LULUS'}</strong>
+            `;
+
+            if(skor < 70) {
+                document.getElementById('ai-recommendation').innerText = "Rekomendasi Cerdas: Skor TO terakhir di bawah target. Tingkatkan jam belajar intensif pada materi Hukum Acara Perdata & Hukum Pidana.";
+            } else {
+                document.getElementById('ai-recommendation').innerText = "Rekomendasi Cerdas: Pertahankan performa Anda! Fokus pada penguasaan pasal-pasal detail di KUHP Nasional UU 1 Tahun 2023.";
+            }
+        }
+
+        // --- FLASHCARD ENGINE ---
+        function addFlashcard() {
+            let front = document.getElementById('fc-front').value.trim();
+            let back = document.getElementById('fc-back').value.trim();
+            if(!front || !back) return alert("Lengkapi kedua sisi kartu.");
+            appData.flashcards.push({ front, back });
+            saveData();
+            alert("Kartu hafalan sukses disimpan!");
+            document.getElementById('fc-front').value = '';
+            document.getElementById('fc-back').value = '';
+        }
+
+        function drawFlashcard() {
+            if(appData.flashcards.length === 0) return alert("Flashcard masih kosong.");
+            let card = appData.flashcards[Math.floor(Math.random() * appData.flashcards.length)];
+            document.getElementById('main-flashcard').classList.remove('flipped');
+            document.getElementById('fc-display-front').innerText = card.front;
+            document.getElementById('fc-display-back').innerText = card.back;
+        }
+
+        function flipCard() {
+            document.getElementById('main-flashcard').classList.toggle('flipped');
+        }
+
+        // --- NOTE EDITOR ---
+        function saveNote() {
+            let title = document.getElementById('note-title').value;
+            let body = document.getElementById('note-content').value;
+            if(!title || !body) return;
+            appData.notes.push({ id: Date.now(), title, body });
+            saveData();
+            renderNotes();
+            document.getElementById('note-title').value = '';
+            document.getElementById('note-content').value = '';
+        }
+
+        function renderNotes() {
+            let list = document.getElementById('notes-list');
+            list.innerHTML = '';
+            appData.notes.forEach(n => {
+                list.innerHTML += `<div class="card mt-3" style="background:#fffdec; color:#111;"><h4>📌 ${n.title}</h4><p>${n.body}</p></div>`;
+            });
+        }
+
+        // --- TARGET MANAGER ---
+        function addTarget() {
+            let text = document.getElementById('target-text').value;
+            if(!text) return;
+            appData.targets.push({ text, done: false });
+            saveData();
+            renderTargets();
+            document.getElementById('target-text').value = '';
+        }
+
+        function renderTargets() {
+            let list = document.getElementById('target-list');
+            list.innerHTML = '';
+            let doneCount = 0;
+            appData.targets.forEach((t, index) => {
+                if(t.done) doneCount++;
+                list.innerHTML += `
+                    <li style="margin-bottom:8px;">
+                        <input type="checkbox" ${t.done ? 'checked':''} onchange="toggleTarget(${index})" style="width:auto; margin:0 10px 0 0;">
+                        <span style="${t.done ? 'text-decoration:line-through; color:grey;':''}">${t.text}</span>
+                    </li>
+                `;
+            });
+            
+            let total = appData.targets.length;
+            document.getElementById('target-summary-text').innerText = `${doneCount}/${total} Target Selesai`;
+            let percentage = total > 0 ? (doneCount / total) * 100 : 0;
+            document.getElementById('target-progress-fill').style.width = percentage + "%";
+        }
+
+        function toggleTarget(index) {
+            appData.targets[index].done = !appData.targets[index].done;
+            saveData();
+            renderTargets();
+        }
+
+        // --- REGULASI TRACKER SYSTEM ---
+        function saveTrackers() {
+            appData.trackers = {
+                uud: document.getElementById('track-uud').checked,
+                kuhp: document.getElementById('track-kuhp').checked,
+                kk: document.getElementById('track-kk').checked,
+                yur: document.getElementById('track-yur').checked,
+                kaidah: document.getElementById('track-kaidah').checked,
+                perdata: document.getElementById('track-perdata').checked,
+            };
+            saveData();
+        }
+
+        function loadTrackers() {
+            let t = appData.trackers || {};
+            document.getElementById('track-uud').checked = !!t.uud;
+            document.getElementById('track-kuhp').checked = !!t.kuhp;
+            document.getElementById('track-kk').checked = !!t.kk;
+            document.getElementById('track-yur').checked = !!t.yur;
+            document.getElementById('track-kaidah').checked = !!t.kaidah;
+            document.getElementById('track-perdata').checked = !!t.perdata;
+        }
+
+        // --- EXPORT & IMPORT BACKUP SYSTEM ---
+        function exportData() {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "cakim_center_backup.json");
+            dlAnchorElem.click();
+        }
+
+        function triggerImport() {
+            document.getElementById('import-file-holder').click();
+        }
+
+        function importData(event) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let importedData = JSON.parse(e.target.result);
+                    if(importedData.materi && importedData.soal) {
+                        appData = importedData;
+                        saveData();
+                        alert("Database sukses di-restore!");
+                        window.location.reload();
+                    } else {
+                        alert("Format file cadangan salah.");
+                    }
+                } catch(err) {
+                    alert("Gagal membaca file berkas JSON.");
+                }
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+
+        function resetAllData() {
+            if(confirm("Apakah Anda yakin ingin menghapus seluruh data materi, soal, dan progres belajar? Tindakan ini tidak dapat dibatalkan.")) {
+                localStorage.removeItem('cakim_platform_data');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
